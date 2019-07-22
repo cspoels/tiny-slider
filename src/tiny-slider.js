@@ -34,6 +34,7 @@ import { addEvents } from './helpers/addEvents.js';
 import { removeEvents } from './helpers/removeEvents.js';
 import { Events } from './helpers/events.js';
 import { jsTransform } from './helpers/jsTransform.js';
+import { absDiff } from './helpers/absDiff'
 
 export var tns = function(options) {
   options = extend({
@@ -87,7 +88,8 @@ export var tns = function(options) {
     preventScrollOnTouch: false,
     freezable: true,
     onInit: false,
-    useLocalStorage: true
+    useLocalStorage: true,
+    dragTreshold: 0
   }, options || {});
   
   var doc = document,
@@ -2527,6 +2529,15 @@ export var tns = function(options) {
   function onPanMove (e) {
     if (panStart) {
       var $ = getEvent(e);
+
+      const aDiff = absDiff(lastPosition.x, $.clientX)
+      if (!hasCrossedTreshold && aDiff > options.dragTreshold) {
+        initPosition.x -= lastPosition.x - $.clientX
+        hasCrossedTreshold = true
+      }
+
+      if (!hasCrossedTreshold) return
+
       lastPosition.x = $.clientX;
       lastPosition.y = $.clientY;
 
@@ -2573,7 +2584,7 @@ export var tns = function(options) {
   }
 
   function onPanEnd (e) {
-    if (panStart) {
+    if (panStart && hasCrossedTreshold) {
       if (rafIndex) {
         caf(rafIndex);
         rafIndex = null;
@@ -2634,6 +2645,7 @@ export var tns = function(options) {
     if (options.preventScrollOnTouch === 'auto') { preventScroll = false; }
     if (swipeAngle) { moveDirectionExpected = '?'; } 
     if (autoplay && !animating) { setAutoplayTimer(); }
+    hasCrossedTreshold = false
   }
 
   // === RESIZE FUNCTIONS === //
