@@ -2554,15 +2554,9 @@ export var tns = function(options) {
   }
 
   function panUpdate (e) {
-    if (!moveDirectionExpected) {
-      panStart = false;
-      return;
-    }
     caf(rafIndex);
     if (panStart) { rafIndex = raf(function(){ panUpdate(e); }); }
 
-    if (moveDirectionExpected === '?') { moveDirectionExpected = getMoveDirectionExpected(); }
-    if (moveDirectionExpected) {
       if (!preventScroll && isTouchEvent(e)) { preventScroll = true; }
 
       try {
@@ -2582,7 +2576,6 @@ export var tns = function(options) {
 
       container.style[transformAttr] = transformPrefix + x + transformPostfix;
     }
-  }
 
   function onPanEnd (e) {
     if (panStart && hasCrossedTreshold) {
