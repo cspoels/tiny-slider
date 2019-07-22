@@ -409,6 +409,7 @@ export var tns = function(options) {
         disX,
         disY,
         panStart = false,
+      hasCrossedTreshold = false,
         rafIndex,
         getDist = horizontal ? 
           function(a, b) { return a.x - b.x; } :
